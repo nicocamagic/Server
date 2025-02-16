@@ -1,24 +1,19 @@
-const WebSocket = require('ws');
+const WebSocket = require("ws");
 
-const server = new WebSocket.Server({ port: 8080 });
+const PORT = process.env.PORT || 8080; // Railway asignará un puerto
+const server = new WebSocket.Server({ port: PORT });
 
-server.on('connection', (socket) => {
-    console.log("Nuevo dispositivo conectado.");
+console.log(`Servidor WebSocket corriendo en el puerto ${PORT}`);
 
-    socket.on('message', (message) => {
-        console.log(`Mensaje recibido: ${message}`);
+server.on("connection", (ws) => {
+    console.log("Nuevo cliente conectado");
 
-        // Enviar el mensaje a todos los dispositivos conectados
-        server.clients.forEach(client => {
-            if (client.readyState === WebSocket.OPEN) {
-                client.send(message);
-            }
-        });
+    ws.on("message", (message) => {
+        console.log("Mensaje recibido:", message);
+        ws.send(message); // Enviar respuesta al cliente
     });
 
-    socket.on('close', () => {
-        console.log("Dispositivo desconectado.");
+    ws.on("close", () => {
+        console.log("Cliente desconectado");
     });
 });
-
-console.log("Servidor WebSocket corriendo en ws://localhost:8080");
